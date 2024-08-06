@@ -38,39 +38,43 @@ import Download from "pages/Presentation/sections/Download";
 
 // Presentation page components
 import BuiltByDevelopers from "pages/Presentation/components/BuiltByDevelopers";
-
+import RotatingCard from "examples/Cards/RotatingCard";
+import RotatingCardFront from "examples/Cards/RotatingCard/RotatingCardFront";
+import RotatingCardBack from "examples/Cards/RotatingCard/RotatingCardBack";
 // Routes
 import routes from "routes";
 import footerRoutes from "footer.routes";
 
 // Images
 import bgImage from "assets/images/bg-presentation.jpg";
+import bgFront from "assets/images/rotating-card-bg-front.jpeg";
+import bgBack from "assets/images/rotating-card-bg-back.jpeg";
 
 function Presentation() {
   return (
     <>
       <DefaultNavbar
         routes={routes}
-        action={{
-          type: "external",
-          route: "https://www.creative-tim.com/product/material-kit-react",
-          label: "free download",
-          color: "info",
-        }}
+        // action={{
+        //   type: "external",
+        //   route: "https://www.creative-tim.com/product/material-kit-react",
+        //   label: "free download",
+        //   color: "info",
+        // }}
         sticky
       />
       <MKBox
-        minHeight="75vh"
+        minHeight="30vh"
         width="100%"
-        sx={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "top",
-          display: "grid",
-          placeItems: "center",
-        }}
+      // sx={{
+      //   backgroundImage: `url(${bgImage})`,
+      //   backgroundSize: "cover",
+      //   backgroundPosition: "top",
+      //   display: "grid",
+      //   placeItems: "center",
+      // }}
       >
-        <Container>
+        {/* <Container>
           <Grid container item xs={12} lg={7} justifyContent="center" mx="auto">
             <MKTypography
               variant="h1"
@@ -96,7 +100,7 @@ function Presentation() {
               developers around the world.
             </MKTypography>
           </Grid>
-        </Container>
+        </Container> */}
       </MKBox>
       <Card
         sx={{
@@ -109,14 +113,15 @@ function Presentation() {
           boxShadow: ({ boxShadows: { xxl } }) => xxl,
         }}
       >
-        <Counters />
+
+        {/* <Counters /> */}
         <Information />
-        <DesignBlocks />
-        <Pages />
-        <Container sx={{ mt: 6 }}>
+        {/* <DesignBlocks />
+        <Pages /> */}
+        {/* <Container sx={{ mt: 6 }}>
           <BuiltByDevelopers />
-        </Container>
-        <Container>
+        </Container> */}
+        {/* <Container>
           <Grid container spacing={3}>
             <Grid item xs={12} lg={4}>
               <FilledInfoCard
@@ -161,7 +166,7 @@ function Presentation() {
           </Grid>
         </Container>
         <Testimonials />
-        <Download />
+        <Download /> */}
         <MKBox pt={18} pb={6}>
           <Container>
             <Grid container spacing={3}>
@@ -173,7 +178,7 @@ function Presentation() {
                   We deliver the best web products
                 </MKTypography>
               </Grid>
-              <Grid
+              {/* <Grid
                 item
                 xs={12}
                 lg={5}
@@ -210,7 +215,7 @@ function Presentation() {
                   <i className="fab fa-pinterest" />
                   &nbsp;Pin it
                 </MKSocialButton>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Container>
         </MKBox>

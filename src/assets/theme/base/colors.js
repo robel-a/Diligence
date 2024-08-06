@@ -45,7 +45,7 @@ export default {
   },
 
   primary: {
-    main: "#e91e63",
+    main: "#335173",
     focus: "#e91e63",
   },
 
@@ -58,7 +58,10 @@ export default {
     main: "#1A73E8",
     focus: "#1662C4",
   },
-
+  customColor: {
+    main: "#335173",
+    focus: "#1662C4",
+  },
   success: {
     main: "#4CAF50",
     focus: "#67bb6a",
@@ -98,8 +101,8 @@ export default {
 
   gradients: {
     primary: {
-      main: "#EC407A",
-      state: "#D81B60",
+      main: "#335173",
+      state: "#335173",
     },
 
     secondary: {
