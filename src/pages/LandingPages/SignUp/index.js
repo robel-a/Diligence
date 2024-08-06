@@ -13,7 +13,10 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 // react-router-dom components
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -35,19 +38,41 @@ import MKButton from "components/MKButton";
 // Images
 // import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
-function SignInBasic() {
+function SignUpBasic() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState("");
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const validatePassword = (value) => {
+    const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/;
+
+    if (!value) {
+      setPasswordError("Password is required");
+    } else if (!regex.test(value)) {
+      setPasswordError(
+        "Password must include at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long."
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
   return (
     <>
       {/* <DefaultNavbar
         routes={routes}
-        // action={{
-        //   type: "external",
-        //   route: "https://www.creative-tim.com/product/material-kit-react",
-        //   label: "free download",
-        //   color: "info",
-        // }}
-        // transparent
-        // light
+      // action={{
+      //   type: "external",
+      //   route: "https://www.creative-tim.com/product/material-kit-react",
+      //   label: "free download",
+      //   color: "info",
+      // }}
+      // transparent
+      // light
       /> */}
       <MKBox
         position="absolute"
@@ -84,34 +109,73 @@ function SignInBasic() {
                 textAlign="center"
               >
                 <MKTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-                  Sign in
+                  Sign up
                 </MKTypography>
               </MKBox>
               <MKBox pt={4} pb={3} px={3}>
                 <MKBox component="form" role="form">
                   <MKBox mb={2}>
+                    <MKInput type="fullName" label="Full Name" fullWidth />
+                  </MKBox>
+                  <MKBox mb={2}>
                     <MKInput type="email" label="Email" fullWidth />
                   </MKBox>
                   <MKBox mb={2}>
-                    <MKInput type="password" label="Password" fullWidth />
+                    <MKInput type={showPassword ? "text" : "password"}
+                      label="Password"
+                      variant="standard"
+                      fullWidth
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        validatePassword(e.target.value);
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        ),
+                      }} />
+                  </MKBox>
+                  <MKBox mb={2}>
+                    <MKInput type={showPassword ? "text" : "password"}
+                      label="Confirm Password"
+                      variant="standard"
+                      fullWidth
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        validatePassword(e.target.value);
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton onClick={() => setShowPassword(!showPassword)}>
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        ),
+                      }}
+                    />
                   </MKBox>
                   <MKBox mt={4} mb={1}>
                     <MKButton variant="gradient" color="primary" fullWidth>
-                      sign in
+                      sign up
                     </MKButton>
                   </MKBox>
                   <MKBox mt={3} mb={1} textAlign="center">
                     <MKTypography variant="button" color="text">
-                      Don&apos;t have an account?{" "}
+                      Alread&apos;y have an account?{" "}
                       <MKTypography
                         component={Link}
-                        to="/pages/authentication/sign-up"
+                        to="/pages/authentication/sign-in"
                         variant="button"
                         color="info"
                         fontWeight="medium"
                         textGradient
                       >
-                        Sign up
+                        Sign in
                       </MKTypography>
                     </MKTypography>
                   </MKBox>
@@ -128,4 +192,4 @@ function SignInBasic() {
   );
 }
 
-export default SignInBasic;
+export default SignUpBasic;
