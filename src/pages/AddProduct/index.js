@@ -25,7 +25,7 @@ function AddProduct() {
     };
 
     const handleSendTotalPrice = () => {
-        navigate("/pages/CustomTax/BankRate", { state: { products } });
+        navigate("/pages/CustomTax/BlackRate", { state: { products } });
     };
 
     return (

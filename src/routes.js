@@ -69,6 +69,9 @@ import Toggles from "layouts/sections/elements/toggles";
 import Typography from "layouts/sections/elements/typography";
 import AddProduct from "pages/AddProduct";
 import TotalPage from "pages/CustomTax/BankRate";
+import BuyingPricePage from "pages/CustomTax/BlackRate";
+import SellingPrice from "pages/CustomTax";
+
 const routes = [
   {
     name: "Home",
@@ -96,9 +99,14 @@ const routes = [
     component: <TotalPage />,
   },
   {
-    name: "Report",
-    route: "pages/AddProduct",
-    component: <AddProduct />,
+    name: "Buying Price",
+    route: "/pages/CustomTax/BlackRate",
+    component: <BuyingPricePage />,
+  },
+  {
+    name: "Selling Price",
+    route: "/pages/CustomTax",
+    component: <SellingPrice />,
   },
   // {
   //   name: "pages",
