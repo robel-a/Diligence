@@ -60,10 +60,10 @@ function SellingPrice() {
                                 <MKButton
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => navigate("/pages/CustomTax/BuyingPricePage")}
+                                    onClick={() => navigate("/pages/AddProduct")}
                                     sx={{ marginTop: 2 }}
                                 >
-                                    Go to Buying Price Page
+                                    Add Product
                                 </MKButton>
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -73,7 +73,7 @@ function SellingPrice() {
                                     onClick={() => navigate("/pages/CustomTax/BuyingPricePage")}
                                     sx={{ marginTop: 2 }}
                                 >
-                                    Go to Buying Price Page
+                                    View Product
                                 </MKButton>
                             </Grid>
                         </Grid>

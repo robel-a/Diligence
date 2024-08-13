@@ -82,7 +82,7 @@ function ContactUs() {
           >
             <MKBox
               variant="gradient"
-              bgColor="info"
+              bgColor="primary"
               coloredShadow="info"
               borderRadius="lg"
               p={2}
@@ -96,7 +96,7 @@ function ContactUs() {
             <MKBox p={3}>
               <MKTypography variant="body2" color="text" mb={3}>
                 For further questions, including partnership opportunities, please email
-                hello@creative-tim.com or contact using our contact form.
+                info@diligencetechnologies.et or contact using our contact form.
               </MKTypography>
               <MKBox width="100%" component="form" method="post" autoComplete="off">
                 <Grid container spacing={3}>
@@ -130,7 +130,7 @@ function ContactUs() {
                   </Grid>
                 </Grid>
                 <Grid container item justifyContent="center" xs={12} mt={5} mb={2}>
-                  <MKButton type="submit" variant="gradient" color="info">
+                  <MKButton type="submit" variant="gradient" color="primary">
                     Send Message
                   </MKButton>
                 </Grid>

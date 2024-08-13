@@ -23,6 +23,8 @@ import MKBox from "components/MKBox";
 // Material Kit 2 React examples
 import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard";
 import CenteredBlogCard from "examples/Cards/BlogCards/CenteredBlogCard";
+import MKTypography from "components/MKTypography";
+import bgFront from "assets/images/logo.gif";
 
 function Information() {
   return (
@@ -31,39 +33,13 @@ function Information() {
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} lg={6}>
             <Grid container justifyContent="flex-start">
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={12}>
                 <MKBox mb={5}>
                   <DefaultInfoCard
-                    icon="public"
-                    title="Fully integrated"
-                    description="We get insulted by others, lose trust for those We get back freezes"
-                  />
-                </MKBox>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <MKBox mb={5}>
-                  <DefaultInfoCard
-                    icon="payments"
-                    title="Payments functionality"
-                    description="We get insulted by others, lose trust for those We get back freezes"
-                  />
-                </MKBox>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <MKBox mb={{ xs: 5, md: 0 }}>
-                  <DefaultInfoCard
-                    icon="apps"
-                    title="Prebuilt components"
-                    description="We get insulted by others, lose trust for those We get back freezes"
-                  />
-                </MKBox>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <MKBox mb={{ xs: 5, md: 0 }}>
-                  <DefaultInfoCard
-                    icon="3p"
-                    title="Improved platform"
-                    description="We get insulted by others, lose trust for those We get back freezes"
+                    // icon="information"
+                    title={<MKTypography variant="h4">About Us</MKTypography>}
+                    description="Diligence Technologies is a leading ICT Solutions Provider based in Addis Ababa, Ethiopia. Founded in 2010, Diligence is made up of a team of IT engineers and management professionals with years of experience in providing robust and optimal IT solutions to all our clients.
+Diligence enhances the growth and profits of our customers by delivering quality ICT Solutions on schedule. We offer quality services in the area of information systems, management consulting, design, development, and customization of business software."
                   />
                 </MKBox>
               </Grid>
@@ -71,12 +47,12 @@ function Information() {
           </Grid>
           <Grid item xs={12} lg={4} sx={{ ml: "auto", mt: { xs: 3, lg: 0 } }}>
             <CenteredBlogCard
-              image="https://images.unsplash.com/photo-1544717302-de2939b7ef71?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-              title="Get insights on Search"
-              description="Website visitors today demand a frictionless user expericence — especially when using search. Because of the hight standards."
+              image={bgFront}
+              title="Diligence Technologies"
+              // description="Website visitors today demand a frictionless user expericence — especially when using search. Because of the hight standards."
               action={{
                 type: "internal",
-                route: "pages/company/about-us",
+                route: "https://diligencetechnologies.et/",
                 color: "info",
                 label: "find out more",
               }}

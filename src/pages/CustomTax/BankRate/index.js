@@ -5,14 +5,16 @@ import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
 import MKButton from "components/MKButton";
+import axios from 'axios'; // Import axios for API calls
+import { BASEURL } from "../../../Api";
 
 function TotalPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const {
-        totalProductPrice,
-        freightValue,
-        insuranceValue,
+        totalProductPrice = 0,
+        freightValue = 0,
+        insuranceValue = 0,
         productDetails = []
     } = location.state || {};
 
@@ -30,32 +32,67 @@ function TotalPage() {
     const [totalInsurance, setTotalInsurance] = React.useState(0);
 
     React.useEffect(() => {
-        setTotalFreight((totalProductPrice * freightValue) / 100);
-        setTotalInsurance((totalProductPrice * insuranceValue) / 100);
+        setTotalFreight((Number(totalProductPrice) * Number(freightValue)) / 100);
+        setTotalInsurance((Number(totalProductPrice) * Number(insuranceValue)) / 100);
     }, [freightValue, insuranceValue, totalProductPrice]);
 
-    const convertedPrice = (totalProductPrice + totalFreight + totalInsurance) * exchangeRate;
+    const convertedPrice = (Number(totalProductPrice) + totalFreight + totalInsurance) * Number(exchangeRate);
 
-    const totalDuties = convertedPrice * dutyValue / 100;
-    const totalExcise = (convertedPrice + totalDuties) * exciseValue / 100;
-    const totalVAT = (convertedPrice + totalDuties + totalExcise) * vatValue / 100;
-    const totalSUR = (convertedPrice + totalDuties + totalExcise + totalVAT) * surValue / 100;
-    const totalWithholding = convertedPrice * withholdingValue / 100;
-    const totalSocial = convertedPrice * socialValue / 100;
+    const totalDuties = (convertedPrice * Number(dutyValue)) / 100;
+    const totalExcise = ((convertedPrice + totalDuties) * Number(exciseValue)) / 100;
+    const totalVAT = ((convertedPrice + totalDuties + totalExcise) * Number(vatValue)) / 100;
+    const totalSUR = ((convertedPrice + totalDuties + totalExcise + totalVAT) * Number(surValue)) / 100;
+    const totalWithholding = (convertedPrice * Number(withholdingValue)) / 100;
+    const totalSocial = (convertedPrice * Number(socialValue)) / 100;
     const totalTax = totalDuties + totalExcise + totalVAT + totalSUR + totalWithholding + totalSocial;
-    const cif = totalProductPrice * exchangeRate + totalFreight + totalInsurance;
+    const cif = Number(totalProductPrice) * Number(exchangeRate) + totalFreight + totalInsurance;
 
-    const handleNavigate = () => {
-        const productDetails = products.map(p => ({ name: p.name, totalPrice: p.totalPrice }));
+    const handleSendData = async () => {
+        if (!Array.isArray(products) || !Array.isArray(productDetails)) {
+            console.error('Invalid data format for products or productDetails');
+            return;
+        }
 
-        navigate("/pages/CustomTax", {
-            state: {
+        try {
+            const response = await axios.post(`${BASEURL}/custom-taxes`, {
+                totalProductPrice,
+                freightValue,
+                insuranceValue,
+                exchangeRate,
+                dutyValue,
+                surValue,
+                vatValue,
+                exciseValue,
+                withholdingValue,
+                socialValue,
+                totalFreight,
+                totalInsurance,
+                totalDuties,
+                totalExcise,
+                totalVAT,
+                totalSUR,
+                totalWithholding,
+                totalSocial,
                 totalTax,
-                productDetails,
-                cif
-            }
-        });
+                cif,
+                products,
+                productDetails
+            });
+
+            console.log('Data successfully sent:', response.data);
+
+            navigate("/pages/CustomTax", {
+                state: {
+                    totalTax,
+                    productDetails,
+                    cif
+                }
+            });
+        } catch (error) {
+            console.error("Error sending data:", error.response ? error.response.data : error.message);
+        }
     };
+
 
     return (
         <>
@@ -106,7 +143,7 @@ function TotalPage() {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Typography variant="h4" textAlign="left" marginBottom={2}>
-                            Additional Information
+                            TAX Rate
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
@@ -201,13 +238,13 @@ function TotalPage() {
                                     label="Total Tax"
                                     variant="outlined"
                                     fullWidth
-                                    value={totalTax}
+                                    value={totalTax.toFixed(2)} // Ensures it's a number and formats to two decimal places
                                     InputProps={{
                                         readOnly: true,
                                         sx: {
-                                            borderColor: 'primary.main', // Replace 'primary.main' with your desired color
+                                            borderColor: 'primary.main',
                                             '& .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: 'primary.main', // Replace 'primary.main' with your desired color
+                                                borderColor: 'primary.main',
                                             }
                                         }
                                     }}
@@ -218,10 +255,10 @@ function TotalPage() {
                         <MKButton
                             variant="contained"
                             color="primary"
-                            onClick={handleNavigate}
+                            onClick={handleSendData}
                             sx={{ marginTop: 2 }}
                         >
-                            Go to Buying Price Page
+                            Submit and Go to Buying Price Page
                         </MKButton>
                     </Grid>
                 </Grid>
