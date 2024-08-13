@@ -3,6 +3,8 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 // Material Kit 2 React components
 import MKTypography from "components/MKTypography";
@@ -21,60 +23,34 @@ export default {
   socials: [
     {
       icon: <FacebookIcon />,
-      link: "https://www.facebook.com/CreativeTim/",
+      // link: "https://www.facebook.com/CreativeTim/",
     },
     {
       icon: <TwitterIcon />,
-      link: "https://twitter.com/creativetim",
+      // link: "https://twitter.com/creativetim",
     },
     {
-      icon: <GitHubIcon />,
-      link: "https://github.com/creativetimofficial",
+      icon: <LinkedInIcon />,
+      // link: "https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w",
     },
     {
-      icon: <YouTubeIcon />,
-      link: "https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w",
+      icon: <WhatsAppIcon />,
+      // link: "https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w",
     },
   ],
   menus: [
+
     {
-      name: "company",
+      name: "Address",
       items: [
-        { name: "about us", href: "https://www.creative-tim.com/presentation" },
-        { name: "freebies", href: "https://www.creative-tim.com/templates/free" },
-        { name: "premium tools", href: "https://www.creative-tim.com/templates/premium" },
-        { name: "blog", href: "https://www.creative-tim.com/blog" },
-      ],
-    },
-    {
-      name: "resources",
-      items: [
-        { name: "illustrations", href: "https://iradesign.io/" },
-        { name: "bits & snippets", href: "https://www.creative-tim.com/bits" },
-        { name: "affiliate program", href: "https://www.creative-tim.com/affiliates/new" },
-      ],
-    },
-    {
-      name: "help & support",
-      items: [
-        { name: "contact us", href: "https://www.creative-tim.com/contact-us" },
-        { name: "knowledge center", href: "https://www.creative-tim.com/knowledge-center" },
-        { name: "custom development", href: "https://services.creative-tim.com/" },
-        { name: "sponsorships", href: "https://www.creative-tim.com/sponsorships" },
-      ],
-    },
-    {
-      name: "legal",
-      items: [
-        { name: "terms & conditions", href: "https://www.creative-tim.com/terms" },
-        { name: "privacy policy", href: "https://www.creative-tim.com/privacy" },
-        { name: "licenses (EULA)", href: "https://www.creative-tim.com/license" },
+        { name: "Aster Suraphel Building, In-front of Dreamliner Hotel, 3rd Floor, Addis Ababa, Ethiopia", href: "https://maps.google.com/maps?ll=8.994789,38.766572&z=10&t=m&hl=en-US&gl=US&mapclient=embed&cid=5650858108643827599" },
+
       ],
     },
   ],
   copyright: (
     <MKTypography variant="button" fontWeight="regular">
-      All rights reserved. Copyright &copy; {date} Material Kit by{" "}
+      All rights reserved. Copyright &copy; {date}{" "}
       <MKTypography
         component="a"
         href="https://www.creative-tim.com"
@@ -83,7 +59,7 @@ export default {
         variant="button"
         fontWeight="regular"
       >
-        Creative Tim
+
       </MKTypography>
       .
     </MKTypography>

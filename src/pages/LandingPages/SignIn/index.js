@@ -1,41 +1,53 @@
-/**
-=========================================================
-* Material Kit 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-kit-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-// react-router-dom components
-import { Link } from "react-router-dom";
-
-// @mui material components
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
-
-// Material Kit 2 React components
+import axios from "axios";
 import MKBox from "components/MKBox";
 import MKTypography from "components/MKTypography";
 import MKInput from "components/MKInput";
 import MKButton from "components/MKButton";
-
-// Material Kit 2 React example components
-// import DefaultNavbar from "examples/Navbars/DefaultNavbar";
-// import SimpleFooter from "examples/Footers/SimpleFooter";
-
-// Material Kit 2 React page layout routes
-// import routes from "routes";
-
-// Images
-// import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import { BASEURL } from "../../../Api";
 
 function SignInBasic() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post(
+        `${BASEURL}/sign-in`,
+        {
+          email,
+          password,
+        }
+      );
+
+      // Assuming the response contains a token or some form of authentication
+      // Save the token or authentication data if needed
+      // localStorage.setItem("token", response.data.token);
+
+      // Redirect to another page, e.g., dashboard
+      navigate("/pages/AddProduct"); // Change this to your desired path
+
+    } catch (error) {
+      setError("Invalid email or password.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {/* <DefaultNavbar
@@ -56,16 +68,6 @@ function SignInBasic() {
         zIndex={1}
         width="100%"
         minHeight="100vh"
-        // sx={{
-        //   backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
-        //     `${linearGradient(
-        //       rgba(gradients.dark.main, 0.6),
-        //       rgba(gradients.dark.state, 0.6)
-        //     )}, url(${bgImage})`,
-        //   backgroundSize: "cover",
-        //   backgroundPosition: "center",
-        //   backgroundRepeat: "no-repeat",
-        // }}
         bgColor="#7F9DC0"
       />
       <MKBox px={1} width="100%" height="100vh" mx="auto" position="relative" zIndex={2}>
@@ -90,14 +92,39 @@ function SignInBasic() {
               <MKBox pt={4} pb={3} px={3}>
                 <MKBox component="form" role="form">
                   <MKBox mb={2}>
-                    <MKInput type="email" label="Email" fullWidth />
+                    <MKInput
+                      type="email"
+                      label="Email"
+                      fullWidth
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </MKBox>
                   <MKBox mb={2}>
-                    <MKInput type="password" label="Password" fullWidth />
+                    <MKInput
+                      type="password"
+                      label="Password"
+                      fullWidth
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </MKBox>
+                  {error && (
+                    <MKBox mb={2}>
+                      <MKTypography variant="caption" color="error" display="block">
+                        {error}
+                      </MKTypography>
+                    </MKBox>
+                  )}
                   <MKBox mt={4} mb={1}>
-                    <MKButton variant="gradient" color="primary" fullWidth>
-                      sign in
+                    <MKButton
+                      variant="gradient"
+                      color="primary"
+                      fullWidth
+                      onClick={handleLogin}
+                      disabled={loading}
+                    >
+                      {loading ? "Signing in..." : "Sign in"}
                     </MKButton>
                   </MKBox>
                   <MKBox mt={3} mb={1} textAlign="center">

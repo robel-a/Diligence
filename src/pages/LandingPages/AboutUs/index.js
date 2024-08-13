@@ -29,6 +29,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 
 // About Us page sections
 import Information from "pages/LandingPages/AboutUs/sections/Information";
+// import Information from "pages/Presentation/sections/Information";
 // import Team from "pages/LandingPages/AboutUs/sections/Team";
 // import Featuring from "pages/LandingPages/AboutUs/sections/Featuring";
 // import Newsletter from "pages/LandingPages/AboutUs/sections/Newsletter";
@@ -45,17 +46,10 @@ function AboutUs() {
     <>
       <DefaultNavbar
         routes={routes}
-      // action={{
-      //   type: "external",
-      //   route: "https://www.creative-tim.com/product/material-kit-react",
-      //   label: "free download",
-      //   color: "default",
-      // }}
-      // transparent
-      // light
+        sticky
       />
       <MKBox
-        minHeight="75vh"
+        minHeight="30vh"
         width="100%"
         sx={{
           backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
@@ -80,7 +74,7 @@ function AboutUs() {
             flexDirection="column"
             sx={{ mx: "auto", textAlign: "center" }}
           >
-            <MKTypography
+            {/* <MKTypography
               variant="h1"
               color="white"
               sx={({ breakpoints, typography: { size } }) => ({
@@ -114,7 +108,7 @@ function AboutUs() {
               <MKTypography component="a" variant="body1" color="white" href="#">
                 <i className="fab fa-google-plus" />
               </MKTypography>
-            </MKBox>
+            </MKBox> */}
           </Grid>
         </Container>
       </MKBox>

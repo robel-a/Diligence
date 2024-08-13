@@ -5,13 +5,15 @@ import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
 import MKButton from "components/MKButton";
+import axios from 'axios'; // Import axios for API calls
+import { BASEURL } from "../../../Api";
 
 function BuyingPricePage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { products = [] } = location.state || {};
 
-    const totalProductPrice = products.reduce((acc, product) => acc + product.totalPrice, 0);
+    const totalProductPrice = products.reduce((acc, product) => acc + product.total_price, 0);
 
     const [freightOption, setFreightOption] = useState("percentage");
     const [insuranceOption, setInsuranceOption] = useState("percentage");
@@ -40,18 +42,30 @@ function BuyingPricePage() {
 
     const convertedPrice = totalProductPrice * exchangeRate + totalFreight + totalInsurance;
 
-    const handleNavigate = () => {
-        const productDetails = products.map(p => ({ name: p.name, totalPrice: p.totalPrice }));
-
-        navigate("/pages/CustomTax/BankRate", {
-            state: {
+    const handleSendData = async () => {
+        try {
+            const response = await axios.post(`${BASEURL}/products/buying-price`, {
+                products,
                 totalProductPrice,
                 freightValue,
                 insuranceValue,
-                productDetails,
-                convertedPrice
-            }
-        });
+                convertedPrice,
+            });
+
+            // Navigate to another page
+            navigate("/pages/CustomTax/BankRate", {
+                state: {
+                    totalProductPrice,
+                    freightValue,
+                    insuranceValue,
+                    productDetails: products.map(p => ({ name: p.name, total_price: p.total_price })),
+                    convertedPrice,
+                }
+            });
+        } catch (error) {
+            console.error("Error sending data:", error);
+            // Handle error (e.g., show a notification or message to the user)
+        }
     };
 
     return (
@@ -129,7 +143,7 @@ function BuyingPricePage() {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Typography variant="h4" textAlign="left" marginBottom={2}>
-                            Additional Information
+                            Black Exchange Rate
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
@@ -157,10 +171,10 @@ function BuyingPricePage() {
                         <MKButton
                             variant="contained"
                             color="primary"
-                            onClick={handleNavigate}
+                            onClick={handleSendData}
                             sx={{ marginTop: 2 }}
                         >
-                            Go to Total Page
+                            Submit and Go to Total Page
                         </MKButton>
                     </Grid>
                 </Grid>
