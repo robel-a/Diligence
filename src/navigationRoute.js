@@ -75,55 +75,37 @@ import InvoiceReportPage from "pages/InvoiceReport";
 import ReportTable from "pages/Report";
 
 const routes = [
-
-  {
-    name: "add product",
-    route: "/pages/AddProduct",
-    component: <AddProduct />,
-    showInNav: true,
-  },
-  {
-    name: "Custom Tax",
-    route: "/pages/CustomTax/BankRate",
-    component: <TotalPage />,
-    showInNav: false,
-  },
-  {
-    name: "Buying Price",
-    route: "/pages/CustomTax/BlackRate",
-    component: <BuyingPricePage />,
-  },
-  {
-    name: "Selling Price",
-    route: "/pages/CustomTax",
-    component: <SellingPrice />,
-  },
-  {
-    name: "Invoice Report Page",
-    route: "/InvoiceReport",
-    component: <InvoiceReportPage />,
-  },
-  {
-    name: "Report Page",
-    route: "/Report",
-    component: <ReportTable />,
-  },
-  {
-    name: "Profile",
-    icon: <Icon>person</Icon>,
-    collapse: [
-      {
-        name: "sign in",
-        route: "/pages/authentication/sign-in",
-        component: <SignIn />,
-      },
-      {
-        name: "sign up",
-        route: "/pages/authentication/sign-up",
-        component: <SignUp />,
-      },
-    ],
-  },
+    {
+        name: "Home",
+        route: "/pages/landing-pages/author",
+        component: <Author />,
+    },
+    {
+        name: "about us",
+        route: "/pages/landing-pages/about-us",
+        component: <AboutUs />,
+    },
+    {
+        name: "contact us",
+        route: "/pages/landing-pages/contact-us",
+        component: <ContactUs />,
+    },
+    {
+        name: "Profile",
+        icon: <Icon>person</Icon>,
+        collapse: [
+            {
+                name: "sign in",
+                route: "/pages/authentication/sign-in",
+                component: <SignIn />,
+            },
+            {
+                name: "sign up",
+                route: "/pages/authentication/sign-up",
+                component: <SignUp />,
+            },
+        ],
+    },
 ];
 
 export default routes;

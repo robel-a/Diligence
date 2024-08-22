@@ -15,40 +15,38 @@ Coded by www.creative-tim.com
 
 import { useEffect } from "react";
 
-// react-router components
+// React Router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
-// @mui material components
+// MUI components
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
-// Material Kit 2 React themes
+// Theme and layouts
 import theme from "assets/theme";
 import Presentation from "layouts/pages/presentation";
 
-// Material Kit 2 React routes
+// App routes
 import routes from "routes";
 
 export default function App() {
   const { pathname } = useLocation();
 
-  // Setting page scroll to 0 when changing the route
+  // Scroll to top on route change
   useEffect(() => {
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
+    window.scrollTo(0, 0);
   }, [pathname]);
 
+  // Function to render routes
   const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
+    allRoutes.flatMap((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
 
-      if (route.route) {
-        return <Route exact path={route.route} element={route.component} key={route.key} />;
-      }
-
-      return null;
+      return route.route ? (
+        <Route exact path={route.route} element={route.component} key={route.key} />
+      ) : [];
     });
 
   return (

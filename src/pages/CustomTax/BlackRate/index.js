@@ -11,7 +11,7 @@ import { BASEURL } from "../../../Api";
 function BuyingPricePage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { products = [] } = location.state || {};
+    const { products = [], productDetails = [] } = location.state || {};
 
     const totalProductPrice = products.reduce((acc, product) => acc + product.total_price, 0);
 
@@ -26,7 +26,7 @@ function BuyingPricePage() {
 
     useEffect(() => {
         if (freightOption === "percentage") {
-            setTotalFreight((totalProductPrice * freightValue) / 100);
+            setTotalFreight((freightValue) / 100);
         } else {
             setTotalFreight(freightValue);
         }
@@ -34,27 +34,30 @@ function BuyingPricePage() {
 
     useEffect(() => {
         if (insuranceOption === "percentage") {
-            setTotalInsurance((totalProductPrice * insuranceValue) / 100);
+            setTotalInsurance((insuranceValue) / 100);
         } else {
             setTotalInsurance(insuranceValue);
         }
     }, [insuranceValue, insuranceOption, totalProductPrice]);
 
     const convertedPrice = totalProductPrice * exchangeRate + totalFreight + totalInsurance;
-
+    const amountInBirr = totalProductPrice * exchangeRate;
     const handleSendData = async () => {
         try {
             const response = await axios.post(`${BASEURL}/products/buying-price`, {
-                products,
+                products: products,
+                productDetails: productDetails,
                 totalProductPrice,
                 freightValue,
                 insuranceValue,
                 convertedPrice,
+                exchangeRate, amountInBirr,
             });
 
             // Navigate to another page
             navigate("/pages/CustomTax/BankRate", {
                 state: {
+                    products,
                     totalProductPrice,
                     freightValue,
                     insuranceValue,
@@ -82,7 +85,7 @@ function BuyingPricePage() {
                             label="Product Name"
                             variant="outlined"
                             fullWidth
-                            value={products.map(p => p.name).join(", ")}
+                            value={productDetails.map(p => p.name).join(", ")}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -163,6 +166,14 @@ function BuyingPricePage() {
                                     variant="outlined"
                                     fullWidth
                                     value={convertedPrice}
+                                    InputProps={{ readOnly: true }}
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="Amount in Birr"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={amountInBirr}
                                     InputProps={{ readOnly: true }}
                                     margin="normal"
                                 />

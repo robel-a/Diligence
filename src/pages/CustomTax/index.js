@@ -9,7 +9,9 @@ import MKButton from "components/MKButton";
 function SellingPrice() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { totalTax = 0, convertedPrice = 0, productDetails = [] } = location.state || {};
+    const { totalTax = 0, convertedPrice = 0, productDetails = [], cif = 0, totalProductPrice = 0 } = location.state || {};
+    const [margin, setmargin] = React.useState(0);
+    const sellingPrice = (cif + totalTax) + ((cif + totalTax) * margin) + ((cif + totalTax) + ((cif + totalTax) * margin)) * .15;
 
     return (
         <>
@@ -25,7 +27,7 @@ function SellingPrice() {
                             label="Total Product Price"
                             variant="outlined"
                             fullWidth
-                            value={productDetails.map(p => p.totalPrice).reduce((acc, price) => acc + price, 0)}
+                            value={totalProductPrice.toFixed(2)} // Display totalProductPrice correctly
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -34,7 +36,15 @@ function SellingPrice() {
                             variant="outlined"
                             type="number"
                             fullWidth
-                            value={convertedPrice}
+                            value={convertedPrice.toFixed(2)} // Display CIF value correctly
+                            InputProps={{ readOnly: true }}
+                            margin="normal"
+                        />
+                        <TextField
+                            label="Total Tax"
+                            variant="outlined"
+                            fullWidth
+                            value={totalTax.toFixed(2)} // Display totalTax correctly
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -46,10 +56,21 @@ function SellingPrice() {
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Total Tax"
+                                    label="Margin (%)"
+                                    variant="outlined"
+                                    type="number"
+                                    fullWidth
+                                    value={margin}
+                                    onChange={(e) => setmargin(Number(e.target.value))}
+                                    margin="normal"
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Selling Price"
                                     variant="outlined"
                                     fullWidth
-                                    value={totalTax}
+                                    value={sellingPrice.toFixed(2)} // Display totalTax correctly
                                     InputProps={{ readOnly: true }}
                                     margin="normal"
                                 />

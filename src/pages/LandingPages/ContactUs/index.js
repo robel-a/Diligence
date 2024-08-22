@@ -27,7 +27,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import DefaultFooter from "examples/Footers/DefaultFooter";
 
 // Routes
-import routes from "routes";
+import routes from "navigationRoute";
 import footerRoutes from "footer.routes";
 
 // Image
