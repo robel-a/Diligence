@@ -35,7 +35,7 @@ import Information from "pages/LandingPages/AboutUs/sections/Information";
 // import Newsletter from "pages/LandingPages/AboutUs/sections/Newsletter";
 
 // Routes
-import routes from "routes";
+import routes from "navigationRoute";
 //    import footerRoutes from "footer.routes";
 
 // Images

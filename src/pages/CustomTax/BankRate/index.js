@@ -5,7 +5,7 @@ import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
 import MKButton from "components/MKButton";
-import axios from 'axios'; // Import axios for API calls
+import axios from 'axios';
 import { BASEURL } from "../../../Api";
 
 function TotalPage() {
@@ -15,10 +15,10 @@ function TotalPage() {
         totalProductPrice = 0,
         freightValue = 0,
         insuranceValue = 0,
-        productDetails = []
+        convertedPrice = 0,
+        productDetails = [],
+        products = []
     } = location.state || {};
-
-    const { products = [] } = location.state || {};
 
     const [exchangeRate, setExchangeRate] = React.useState(1);
     const [dutyValue, setDutyValue] = React.useState(0);
@@ -32,27 +32,22 @@ function TotalPage() {
     const [totalInsurance, setTotalInsurance] = React.useState(0);
 
     React.useEffect(() => {
-        setTotalFreight((Number(totalProductPrice) * Number(freightValue)) / 100);
-        setTotalInsurance((Number(totalProductPrice) * Number(insuranceValue)) / 100);
+        setTotalFreight(freightValue);
+        setTotalInsurance(insuranceValue);
     }, [freightValue, insuranceValue, totalProductPrice]);
 
-    const convertedPrice = (Number(totalProductPrice) + totalFreight + totalInsurance) * Number(exchangeRate);
+    const cif = (Number(totalProductPrice) + totalFreight + totalInsurance) * Number(exchangeRate);
 
-    const totalDuties = (convertedPrice * Number(dutyValue)) / 100;
-    const totalExcise = ((convertedPrice + totalDuties) * Number(exciseValue)) / 100;
-    const totalVAT = ((convertedPrice + totalDuties + totalExcise) * Number(vatValue)) / 100;
-    const totalSUR = ((convertedPrice + totalDuties + totalExcise + totalVAT) * Number(surValue)) / 100;
-    const totalWithholding = (convertedPrice * Number(withholdingValue)) / 100;
-    const totalSocial = (convertedPrice * Number(socialValue)) / 100;
+    const totalDuties = (cif * Number(dutyValue)) / 100;
+    const totalExcise = ((cif + totalDuties) * Number(exciseValue)) / 100;
+    const totalVAT = ((cif + totalDuties + totalExcise) * Number(vatValue)) / 100;
+    const totalSUR = ((cif + totalDuties + totalExcise + totalVAT) * Number(surValue)) / 100;
+    const totalWithholding = (cif * Number(withholdingValue)) / 100;
+    const totalSocial = (cif * Number(socialValue)) / 100;
     const totalTax = totalDuties + totalExcise + totalVAT + totalSUR + totalWithholding + totalSocial;
-    const cif = Number(totalProductPrice) * Number(exchangeRate) + totalFreight + totalInsurance;
+    // const cif = (Number(totalProductPrice) + totalFreight + totalInsurance) * Number(exchangeRate);
 
     const handleSendData = async () => {
-        if (!Array.isArray(products) || !Array.isArray(productDetails)) {
-            console.error('Invalid data format for products or productDetails');
-            return;
-        }
-
         try {
             const response = await axios.post(`${BASEURL}/custom-taxes`, {
                 totalProductPrice,
@@ -76,7 +71,7 @@ function TotalPage() {
                 totalTax,
                 cif,
                 products,
-                productDetails
+                productDetails: productDetails
             });
 
             console.log('Data successfully sent:', response.data);
@@ -84,7 +79,9 @@ function TotalPage() {
             navigate("/pages/CustomTax", {
                 state: {
                     totalTax,
+                    convertedPrice,
                     productDetails,
+                    totalProductPrice, // Ensure this is passed correctly
                     cif
                 }
             });
@@ -92,7 +89,6 @@ function TotalPage() {
             console.error("Error sending data:", error.response ? error.response.data : error.message);
         }
     };
-
 
     return (
         <>
@@ -108,7 +104,7 @@ function TotalPage() {
                             label="Product Name"
                             variant="outlined"
                             fullWidth
-                            value={productDetails.map(p => p.name).join(", ")}
+                            value={products.map(p => p.name).join(", ")}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -116,7 +112,15 @@ function TotalPage() {
                             label="Total Product Price"
                             variant="outlined"
                             fullWidth
-                            value={totalProductPrice}
+                            value={totalProductPrice.toFixed(2)} // Ensure totalProductPrice is formatted correctly
+                            InputProps={{ readOnly: true }}
+                            margin="normal"
+                        />
+                        <TextField
+                            label="Customs"
+                            variant="outlined"
+                            fullWidth
+                            value={convertedPrice.toFixed(2)} // Ensure totalProductPrice is formatted correctly
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -126,7 +130,7 @@ function TotalPage() {
                             variant="outlined"
                             type="number"
                             fullWidth
-                            value={totalFreight}
+                            value={totalFreight.toFixed(2)}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -136,7 +140,7 @@ function TotalPage() {
                             variant="outlined"
                             type="number"
                             fullWidth
-                            value={totalInsurance}
+                            value={totalInsurance.toFixed(2)}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -162,7 +166,7 @@ function TotalPage() {
                                     label="CIF"
                                     variant="outlined"
                                     fullWidth
-                                    value={cif}
+                                    value={cif.toFixed(2)}
                                     InputProps={{ readOnly: true }}
                                     margin="normal"
                                 />
@@ -238,7 +242,7 @@ function TotalPage() {
                                     label="Total Tax"
                                     variant="outlined"
                                     fullWidth
-                                    value={totalTax.toFixed(2)} // Ensures it's a number and formats to two decimal places
+                                    value={totalTax.toFixed(2)}
                                     InputProps={{
                                         readOnly: true,
                                         sx: {
@@ -258,7 +262,7 @@ function TotalPage() {
                             onClick={handleSendData}
                             sx={{ marginTop: 2 }}
                         >
-                            Submit and Go to Buying Price Page
+                            Calculate
                         </MKButton>
                     </Grid>
                 </Grid>
