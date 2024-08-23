@@ -5,7 +5,7 @@ import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
 import MKButton from "components/MKButton";
-import axios from 'axios'; // Import axios for API calls
+import axios from 'axios';
 import { BASEURL } from "../../../Api";
 
 function BuyingPricePage() {
@@ -13,8 +13,18 @@ function BuyingPricePage() {
     const navigate = useNavigate();
     const { products = [], productDetails = [] } = location.state || {};
 
+    // Log to ensure that productDetails is correctly passed
+    console.log("Received productDetails:", productDetails);
+
+    // Ensure that productDetails is an array
+    if (!Array.isArray(productDetails)) {
+        console.error("productDetails is not an array:", productDetails);
+    }
+
+    // Calculate total product price
     const totalProductPrice = products.reduce((acc, product) => acc + product.total_price, 0);
 
+    // State variables
     const [freightOption, setFreightOption] = useState("percentage");
     const [insuranceOption, setInsuranceOption] = useState("percentage");
     const [freightValue, setFreightValue] = useState(0);
@@ -24,50 +34,69 @@ function BuyingPricePage() {
     const [totalFreight, setTotalFreight] = useState(0);
     const [totalInsurance, setTotalInsurance] = useState(0);
 
+    // Calculate total freight based on the selected option
     useEffect(() => {
         if (freightOption === "percentage") {
-            setTotalFreight((freightValue) / 100);
+            setTotalFreight((freightValue * totalProductPrice) / 100);
         } else {
             setTotalFreight(freightValue);
         }
     }, [freightValue, freightOption, totalProductPrice]);
 
+    // Calculate total insurance based on the selected option
     useEffect(() => {
         if (insuranceOption === "percentage") {
-            setTotalInsurance((insuranceValue) / 100);
+            setTotalInsurance((insuranceValue * totalProductPrice) / 100);
         } else {
             setTotalInsurance(insuranceValue);
         }
     }, [insuranceValue, insuranceOption, totalProductPrice]);
 
+    // Calculate converted price and amount in Birr
     const convertedPrice = totalProductPrice * exchangeRate + totalFreight + totalInsurance;
     const amountInBirr = totalProductPrice * exchangeRate;
+
+    // Handle data submission
     const handleSendData = async () => {
         try {
-            const response = await axios.post(`${BASEURL}/products/buying-price`, {
-                products: products,
-                productDetails: productDetails,
+            // Check and log productDetails
+            if (!Array.isArray(productDetails) || productDetails.length === 0) {
+                console.error("Product details are missing or not an array.");
+                return; // Prevent the request from being sent if productDetails is invalid
+            }
+
+            // Prepare payload
+            const payload = {
+                products,
+                productDetails, // Ensure this is correctly populated
                 totalProductPrice,
                 freightValue,
                 insuranceValue,
                 convertedPrice,
-                exchangeRate, amountInBirr,
-            });
+                exchangeRate,
+                amountInBirr,
+            };
 
-            // Navigate to another page
+            // Log payload for debugging
+            console.log("Sending payload:", payload);
+
+            // Post request
+            const response = await axios.post(`${BASEURL}/products/buying-price`, payload);
+
+            // Navigate to the next page upon success
             navigate("/pages/CustomTax/BankRate", {
                 state: {
                     products,
                     totalProductPrice,
                     freightValue,
                     insuranceValue,
-                    productDetails: products.map(p => ({ name: p.name, total_price: p.total_price })),
+                    productDetails, // Pass correctly
                     convertedPrice,
                 }
             });
         } catch (error) {
-            console.error("Error sending data:", error);
-            // Handle error (e.g., show a notification or message to the user)
+            console.error("Error sending data:", error.response?.data || error.message);
+            // Handle error, potentially showing an error message to the user
         }
     };
 
@@ -85,7 +114,7 @@ function BuyingPricePage() {
                             label="Product Name"
                             variant="outlined"
                             fullWidth
-                            value={productDetails.map(p => p.name).join(", ")}
+                            value={products.map(p => p.name).join(", ")}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
