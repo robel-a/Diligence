@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Container, Grid, TextField, Typography } from "@mui/material";
+import { Container, Grid, TextField, Typography, IconButton } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useLocation, useNavigate } from "react-router-dom";
 import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
@@ -37,7 +38,7 @@ function BuyingPricePage() {
     // Calculate total freight based on the selected option
     useEffect(() => {
         if (freightOption === "percentage") {
-            setTotalFreight((freightValue * totalProductPrice) / 100);
+            setTotalFreight((freightValue / 100 * totalProductPrice));
         } else {
             setTotalFreight(freightValue);
         }
@@ -46,14 +47,14 @@ function BuyingPricePage() {
     // Calculate total insurance based on the selected option
     useEffect(() => {
         if (insuranceOption === "percentage") {
-            setTotalInsurance((insuranceValue * totalProductPrice) / 100);
+            setTotalInsurance((insuranceValue / 100 * totalProductPrice));
         } else {
             setTotalInsurance(insuranceValue);
         }
     }, [insuranceValue, insuranceOption, totalProductPrice]);
 
     // Calculate converted price and amount in Birr
-    const convertedPrice = totalProductPrice * exchangeRate + totalFreight + totalInsurance;
+    const convertedPrice = (totalProductPrice + totalFreight + totalInsurance) * exchangeRate;
     const amountInBirr = totalProductPrice * exchangeRate;
 
     // Handle data submission
@@ -105,6 +106,13 @@ function BuyingPricePage() {
             <DefaultNavbar routes={routes} sticky />
             <MKBox minHeight="30vh" width="100%" />
             <Container>
+                <IconButton
+                    onClick={() => navigate("/pages/AddProduct")}
+                    color="primary"
+                    sx={{ marginBottom: 2 }}
+                >
+                    <ArrowBackIcon />
+                </IconButton>
                 <Grid container spacing={2} justifyContent="flex-start">
                     <Grid item xs={12} md={6}>
                         <Typography variant="h4" textAlign="left" marginBottom={2}>

@@ -1,58 +1,110 @@
-import React, { useState } from "react";
-import { Container, Grid, TextField, Typography, Modal, Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+    Container, Grid, TextField, Typography, Modal, Box, MenuItem,
+    Select,
+    FormControl,
+    InputLabel, IconButton
+} from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useLocation, useNavigate } from "react-router-dom";
 import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
 import MKButton from "components/MKButton";
 import axios from 'axios';
-import { BASEURL } from "../../Api"; // Adjust the import path as needed
+import { BASEURL } from "../../Api";
 
 function SellingPrice() {
     const location = useLocation();
     const navigate = useNavigate();
+    const [referenceNumber, setReferenceNumber] = useState(""); // Use this for the selected or added reference number
+    const [invoiceReferences, setInvoiceReferences] = useState([]);
+    const [newReference, setNewReference] = useState(""); // State to manage new reference input
     const { totalTax = 0, convertedPrice = 0, productDetails = [], cif = 0, totalProductPrice = 0 } = location.state || {};
     const [margin, setMargin] = useState(0);
-    const sellingPrice = (cif + totalTax) + ((cif + totalTax) * margin / 100) + ((cif + totalTax) + ((cif + totalTax) * margin / 100)) * 0.15;
-
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [referenceNumber, setReferenceNumber] = useState("");
-    const [loading, setLoading] = useState(false); // To handle loading state
+    const [loading, setLoading] = useState(false);
+
+    // Calculate the base selling price (CIF + Total Tax)
+    const baseSellingPrice = cif + totalTax;
+    // Calculate the margin amount based on the base selling price and margin percentage
+    const marginAmount = baseSellingPrice * (margin / 100);
+    // Calculate the final selling price by adding the margin amount to the base selling price
+    const sellingPrice = baseSellingPrice + marginAmount;
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
-    const handleSubmit = async () => {
+    const fetchInvoiceReferences = async () => {
         try {
-            setLoading(true); // Set loading to true while the request is in progress
-
-            // Prepare the payload for the API request
-            const payload = {
-                referenceNumber,
-                productDetails,
-                totalTax,
-                convertedPrice,
-                sellingPrice,
-            };
-
-            // Post request to the backend
-            await axios.post(`${BASEURL}/invoices`, payload); // Adjust the endpoint as necessary
-
-            // Navigate to InvoiceReport page after successful submission
-            // navigate("/InvoiceReport", { state: { referenceNumber } });
+            const response = await axios.get(`${BASEURL}/invoiceReference`);
+            setInvoiceReferences(response.data || []);
         } catch (error) {
-            console.error("Error submitting data:", error.response?.data || error.message);
-            // Handle error, potentially showing an error message to the user
-        } finally {
-            setLoading(false); // Reset loading state
+            console.error("Error fetching invoice references:", error);
         }
     };
+
+    const handleAddReference = () => {
+        if (newReference) {
+            setInvoiceReferences((prevReferences) => [...prevReferences, newReference]);
+            setReferenceNumber(newReference);
+            setNewReference("");  // Clear the new reference input after adding
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!referenceNumber) {
+            alert("Please select or add a reference number before submitting.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            // Calculate the unit price and selling price for each product
+            const updatedProductDetails = productDetails.map((product) => {
+                const productSellingPrice = product.price + (product.price * margin / 100);
+                const unitPrice = productSellingPrice / product.quantity;
+                return {
+                    ...product,
+                    sellingPrice: productSellingPrice.toFixed(2),
+                    unitPrice: unitPrice.toFixed(2),
+                };
+            });
+
+            const payload = {
+                referenceNumber,
+                productDetails: updatedProductDetails,
+                totalTax,
+                convertedPrice,
+                sellingPrice: sellingPrice.toFixed(2),
+            };
+
+            await axios.post(`${BASEURL}/invoices`, payload);
+            navigate("/InvoiceReport", { state: { referenceNumber } });
+        } catch (error) {
+            console.error("Error submitting data:", error.response?.data || error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchInvoiceReferences();
+    }, []);
 
     return (
         <>
             <DefaultNavbar routes={routes} sticky />
             <MKBox minHeight="30vh" width="100%" />
             <Container>
+                <IconButton
+                    onClick={() => navigate("/pages/CustomTax/BankRate")}
+                    color="primary"
+                    sx={{ marginBottom: 2 }}
+                >
+                    <ArrowBackIcon />
+                </IconButton>
                 <Grid container spacing={2} justifyContent="flex-start">
                     <Grid item xs={12} md={6}>
                         <Typography variant="h4" textAlign="left" marginBottom={2}>
@@ -62,7 +114,7 @@ function SellingPrice() {
                             label="Total Product Price"
                             variant="outlined"
                             fullWidth
-                            value={totalProductPrice.toFixed(2)} // Display totalProductPrice correctly
+                            value={totalProductPrice.toFixed(2)}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -71,7 +123,7 @@ function SellingPrice() {
                             variant="outlined"
                             type="number"
                             fullWidth
-                            value={convertedPrice.toFixed(2)} // Display CIF value correctly
+                            value={convertedPrice.toFixed(2)}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -79,7 +131,7 @@ function SellingPrice() {
                             label="Total Tax"
                             variant="outlined"
                             fullWidth
-                            value={totalTax.toFixed(2)} // Display totalTax correctly
+                            value={totalTax.toFixed(2)}
                             InputProps={{ readOnly: true }}
                             margin="normal"
                         />
@@ -105,7 +157,7 @@ function SellingPrice() {
                                     label="Selling Price"
                                     variant="outlined"
                                     fullWidth
-                                    value={sellingPrice.toFixed(2)} // Display selling price correctly
+                                    value={sellingPrice.toFixed(2)}
                                     InputProps={{ readOnly: true }}
                                     margin="normal"
                                 />
@@ -137,7 +189,6 @@ function SellingPrice() {
                 </Grid>
             </Container>
 
-            {/* Modal for viewing product details */}
             <Modal open={isModalOpen} onClose={handleCloseModal}>
                 <Box
                     sx={{
@@ -155,28 +206,62 @@ function SellingPrice() {
                     <Typography variant="h6" component="h2" gutterBottom>
                         Product Information
                     </Typography>
-                    {productDetails.map((product, index) => (
-                        <Box key={index} mb={2}>
-                            <Typography>Name: {product.name}</Typography>
-                            <Typography>Quantity: {product.quantity}</Typography>
-                            <Typography>Unit Price: {(product.price).toFixed(2)}</Typography>
-                            <Typography>Selling Price: {((product.price * margin / 100) + product.price).toFixed(2)}</Typography>
-                        </Box>
-                    ))}
+                    {productDetails.map((product, index) => {
+                        // Calculate the selling price including the margin
+                        const productSellingPrice = (product.price + (product.price * margin / 100)).toFixed(2);
+                        // Calculate the unit price as the selling price divided by quantity
+                        const unitPrice = (sellingPrice / product.quantity).toFixed(2);
+
+                        return (
+                            <Box key={index} mb={2}>
+                                <Typography>Name: {product.name}</Typography>
+                                <Typography>Quantity: {product.quantity}</Typography>
+                                <Typography>Unit Price: {unitPrice}</Typography>
+                                <Typography>Selling Price: {sellingPrice}</Typography>
+                            </Box>
+                        );
+                    })}
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Select Invoice Reference</InputLabel>
+                        <Select
+                            value={referenceNumber}  // Bind to referenceNumber
+                            onChange={(e) => setReferenceNumber(e.target.value)}  // Update referenceNumber directly
+                            label="Select Invoice Reference"
+                        >
+                            {invoiceReferences.length > 0 ? (
+                                invoiceReferences.map((ref) => (
+                                    <MenuItem key={ref} value={ref}>
+                                        {ref}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>No References Available</MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
                     <TextField
-                        label="Reference Number"
+                        label="Add New Invoice Reference"
                         variant="outlined"
                         fullWidth
-                        value={referenceNumber}
-                        onChange={(e) => setReferenceNumber(e.target.value)}
                         margin="normal"
+                        value={newReference}
+                        onChange={(e) => setNewReference(e.target.value)}
                     />
+                    <MKButton
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleAddReference}
+                        sx={{ marginTop: 2 }}
+                        disabled={!newReference.trim()} // Disable button if input is empty
+                    >
+                        Add Reference
+                    </MKButton>
                     <MKButton
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
                         sx={{ marginTop: 2 }}
-                        disabled={loading} // Disable button while loading
+                        disabled={loading}
                     >
                         {loading ? 'Submitting...' : 'Submit'}
                     </MKButton>
