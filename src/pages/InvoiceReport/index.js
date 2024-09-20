@@ -1,37 +1,94 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios"; // Import axios
-import { Container, Grid, Typography, Table, TableBody, TableCell, TableHead, TableRow, Divider, TextField, Box } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
-import MKBox from "components/MKBox";
+import axios from "axios";
+import {
+    Container,
+    Grid,
+    Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    Divider,
+    TextField,
+    Box,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel
+} from "@mui/material";
+import { useReactToPrint } from "react-to-print";
+import jsPDF from "jspdf";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
 import MKButton from "components/MKButton";
-import { useReactToPrint } from "react-to-print";
-import jsPDF from "jspdf";
 import { BASEURL } from "../../Api";
+import MKBox from "components/MKBox";
 
 function InvoiceReportPage() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { totalTax = 0, convertedPrice = 0, invoiceDetails = {} } = location.state || {};
+    const [invoiceReferences, setInvoiceReferences] = useState([]);
+    const [selectedReference, setSelectedReference] = useState("");
     const [productDetails, setProductDetails] = useState([]);
+    const [invoiceDetails, setInvoiceDetails] = useState({});
+    const [totalTax, setTotalTax] = useState(0);
+    const [invoices, setInvoices] = useState([]);
     const printRef = useRef();
 
-    // Function to fetch product details based on the reference number
-    useEffect(() => {
-        const fetchProductDetails = async () => {
-            try {
-                const response = await axios.get(`${BASEURL}/products?refNumber=${invoiceDetails.invoiceNumber}`);
-                setProductDetails(response.data);
-            } catch (error) {
-                console.error("Error fetching product details:", error);
-            }
-        };
-
-        if (invoiceDetails.invoiceNumber) {
-            fetchProductDetails();
+    // Method to fetch invoice references
+    const fetchInvoiceReferences = async () => {
+        try {
+            const response = await axios.get(`${BASEURL}/invoiceReference`);
+            console.log("Fetched References:", response.data); // Debugging line
+            setInvoiceReferences(response.data || []);
+        } catch (error) {
+            console.error("Error fetching invoice references:", error);
         }
-    }, [invoiceDetails.invoiceNumber]);
+    };
+
+    // Method to fetch invoice data based on reference
+    const fetchInvoiceData = async (reference) => {
+        if (reference) {
+            try {
+                const response = await axios.get(`${BASEURL}/invoice/${reference}`);
+                console.log("Fetched Invoice Data:", response.data); // Debugging line
+
+                // Assume response.data is an array of invoices
+                const invoicesData = response.data;
+                setInvoices(invoicesData);
+
+                // Merge all product details and calculate total tax
+                let allProductDetails = [];
+                let totalTaxSum = 0;
+
+                invoicesData.forEach(invoice => {
+                    if (invoice.product_details) {
+                        const productDetails = JSON.parse(invoice.product_details);
+                        // Ensure that each product has a converted_price
+                        productDetails.forEach(product => {
+                            product.converted_price = parseFloat(invoice.converted_price) || 0; // Default to 0 if not available
+                        });
+                        allProductDetails = [...allProductDetails, ...productDetails];
+                    }
+                    if (invoice.total_tax) {
+                        totalTaxSum += parseFloat(invoice.total_tax);
+                    }
+                });
+
+                setProductDetails(allProductDetails);
+                setTotalTax(totalTaxSum);
+
+            } catch (error) {
+                console.error("Error fetching invoice data:", error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetchInvoiceReferences(); // Fetch references when the component mounts
+    }, []);
+
+    useEffect(() => {
+        fetchInvoiceData(selectedReference); // Fetch invoice data when reference changes
+    }, [selectedReference]);
 
     const handlePrint = useReactToPrint({
         content: () => printRef.current,
@@ -83,15 +140,30 @@ function InvoiceReportPage() {
                         </Grid>
                         <Grid item xs={6} sm={6} textAlign="right">
                             <Typography variant="h6">
-                                Date: {invoiceDetails.date || "DD/MM/YYYY"}
+                                Date: {invoices[0]?.created_at?.split('T')[0] || "DD/MM/YYYY"}
                             </Typography>
-                            <Typography variant="h6">
-                                Reference Number: {invoiceDetails.invoiceNumber || "####"}
-                            </Typography>
+                            <FormControl fullWidth>
+                                <InputLabel>Select Invoice Reference</InputLabel>
+                                <Select
+                                    value={selectedReference}
+                                    onChange={(e) => setSelectedReference(e.target.value)}
+                                    label="Select Invoice Reference"
+                                >
+                                    {invoiceReferences.length > 0 ? (
+                                        invoiceReferences.map((ref) => (
+                                            <MenuItem key={ref} value={ref}>
+                                                {ref}
+                                            </MenuItem>
+                                        ))
+                                    ) : (
+                                        <MenuItem disabled>No References Available</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
                         </Grid>
-                        <Grid container spacing={2} margin='2px' >
+                        <Grid container spacing={2} margin='2px'>
                             <Grid item xs={12} md={6} textAlign="left">
-                                <Typography variant="h6" >
+                                <Typography variant="h6">
                                     Diligence Technologies-One Member PLC
                                     <br />
                                     Gabon Street, Meskel Flower Road Aster Surafel Building
@@ -130,36 +202,42 @@ function InvoiceReportPage() {
 
                     {/* Product Table Section */}
                     <Table sx={{ border: '3px solid black' }}>
+
                         <TableRow>
-                            <TableCell><strong>Description</strong></TableCell>
+                            <TableCell><strong>Product Name</strong></TableCell>
                             <TableCell align="center"><strong>Quantity</strong></TableCell>
-                            <TableCell align="center"><strong>Unit Price</strong></TableCell>
+                            <TableCell align="center"><strong>Unit Price (Converted)</strong></TableCell>
                             <TableCell align="center"><strong>Amount</strong></TableCell>
                         </TableRow>
+
                         <TableBody>
-                            {productDetails.map((product, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{product.description}</TableCell>
-                                    <TableCell align="center">{product.quantity}</TableCell>
-                                    <TableCell align="center">{product.unitPrice.toFixed(2)}</TableCell>
-                                    <TableCell align="center">{(product.quantity * product.unitPrice).toFixed(2)}</TableCell>
+                            {productDetails.length > 0 ? (
+                                productDetails.map((product, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{product.name}</TableCell>
+                                        <TableCell align="center">{product.quantity}</TableCell>
+                                        <TableCell align="center">
+                                            {product.converted_price !== undefined ? product.converted_price.toFixed(2) : 'N/A'}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            {(product.quantity * product.converted_price).toFixed(2)}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} align="center">No Products Available</TableCell>
                                 </TableRow>
-                            ))}
+                            )}
                             <TableRow>
                                 <TableCell colSpan={3} align="right"><strong>Subtotal</strong></TableCell>
                                 <TableCell align="center">
-                                    {productDetails.reduce((acc, product) => acc + product.quantity * product.unitPrice, 0).toFixed(2)}
+                                    {productDetails.reduce((acc, product) => acc + product.quantity * (product.converted_price || 0), 0).toFixed(2)}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell colSpan={3} align="right"><strong>Total Tax</strong></TableCell>
                                 <TableCell align="center">{totalTax.toFixed(2)}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell colSpan={3} align="right"><strong>Grand Total</strong></TableCell>
-                                <TableCell align="center">
-                                    {(productDetails.reduce((acc, product) => acc + product.quantity * product.unitPrice, 0) + totalTax).toFixed(2)}
-                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -205,18 +283,10 @@ function InvoiceReportPage() {
                         </Grid>
                     </Grid>
                 </div>
-                <Grid container spacing={2} justifyContent="flex-end" marginTop={4}>
-                    <Grid item xs={12} sm={3}>
-                        <MKButton variant="contained" color="primary" onClick={handlePrint} fullWidth>
-                            Print Proforma Invoice
-                        </MKButton>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                        <MKButton variant="contained" color="primary" onClick={handleDownloadPDF} fullWidth>
-                            Download as PDF
-                        </MKButton>
-                    </Grid>
-                </Grid>
+                <MKBox mt={2} display="flex" justifyContent="space-between">
+                    <MKButton onClick={handlePrint} color="primary">Print</MKButton>
+                    <MKButton onClick={handleDownloadPDF} color="primary">Download PDF</MKButton>
+                </MKBox>
             </Container>
         </>
     );

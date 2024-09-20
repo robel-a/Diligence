@@ -1,17 +1,9 @@
 {
-  "name": "material-kit-2-react",
+  "name": "Diligence_Technologies",
   "version": "2.1.0",
   "private": true,
-  "author": "Creative Tim",
-  "license": "See license in https://www.creative-tim.com/license",
-  "description": "React version of Material Kit 2 by Creative Tim",
-  "bugs": {
-    "url": "https://github.com/creativetimofficial/ct-material-kit-react/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/creativetimofficial/ct-material-kit-react.git"
-  },
+  "homepage": "https://robel-a/github.io/Diligence",
+  
   "dependencies": {
     "@emotion/cache": "11.10.7",
     "@emotion/react": "^11.13.0",
@@ -39,6 +31,8 @@
     "web-vitals": "3.3.1"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

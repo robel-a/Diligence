@@ -35,7 +35,7 @@ import Information from "pages/LandingPages/AboutUs/sections/Information";
 // import Newsletter from "pages/LandingPages/AboutUs/sections/Newsletter";
 
 // Routes
-import routes from "navigationRoute";
+import navroutes from "navigationRoute";
 //    import footerRoutes from "footer.routes";
 
 // Images
@@ -45,7 +45,7 @@ function AboutUs() {
   return (
     <>
       <DefaultNavbar
-        routes={routes}
+        routes={navroutes}
         sticky
       />
       <MKBox

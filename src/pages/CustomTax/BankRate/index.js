@@ -1,6 +1,7 @@
 import React from "react";
-import { Container, Grid, TextField, Typography } from "@mui/material";
+import { Container, Grid, TextField, Typography, IconButton } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import arrow back icon
 import MKBox from "components/MKBox";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import routes from "routes";
@@ -45,7 +46,6 @@ function TotalPage() {
     const totalWithholding = (cif * Number(withholdingValue)) / 100;
     const totalSocial = (cif * Number(socialValue)) / 100;
     const totalTax = totalDuties + totalExcise + totalVAT + totalSUR + totalWithholding + totalSocial;
-    // const cif = (Number(totalProductPrice) + totalFreight + totalInsurance) * Number(exchangeRate);
 
     const handleSendData = async () => {
         try {
@@ -95,6 +95,15 @@ function TotalPage() {
             <DefaultNavbar routes={routes} sticky />
             <MKBox minHeight="30vh" width="100%" />
             <Container>
+                {/* Back Button */}
+                <IconButton
+                    onClick={() => navigate("/pages/CustomTax/BlackRate")}
+                    color="primary"
+                    sx={{ marginBottom: 2 }}
+                >
+                    <ArrowBackIcon />
+                </IconButton>
+
                 <Grid container spacing={2} justifyContent="flex-start">
                     <Grid item xs={12} md={6}>
                         <Typography variant="h4" textAlign="left" marginBottom={2}>
