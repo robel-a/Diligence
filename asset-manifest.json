@@ -1,0 +1,32 @@
+{
+  "files": {
+    "main.js": "/github.io/Diligence/static/js/main.eab34d49.js",
+    "static/js/239.d9726c66.chunk.js": "/github.io/Diligence/static/js/239.d9726c66.chunk.js",
+    "static/js/213.c38bdbd8.chunk.js": "/github.io/Diligence/static/js/213.c38bdbd8.chunk.js",
+    "static/js/455.2aad139e.chunk.js": "/github.io/Diligence/static/js/455.2aad139e.chunk.js",
+    "static/media/rotating-card-bg-front.jpeg": "/github.io/Diligence/static/media/rotating-card-bg-front.bdcdfadc0dacb9bc5f23.jpeg",
+    "static/media/bg-coworking.jpeg": "/github.io/Diligence/static/media/bg-coworking.06bccc47fe6ae5366bf8.jpeg",
+    "static/media/rotating-card-bg-back.jpeg": "/github.io/Diligence/static/media/rotating-card-bg-back.183088de91adb283a9ae.jpeg",
+    "static/media/waves-white.svg": "/github.io/Diligence/static/media/waves-white.7e7579c6e93ead70064fb4e8dd899f32.svg",
+    "static/media/bg-about-us.jpg": "/github.io/Diligence/static/media/bg-about-us.989d085c8ac8f1e1cc4a.jpg",
+    "static/media/team-1.jpg": "/github.io/Diligence/static/media/team-1.0fd36e0ee93dcfacdef8.jpg",
+    "static/media/logo.gif": "/github.io/Diligence/static/media/logo.30c7d0bd5dd3fe28de69.gif",
+    "static/media/team-2.jpg": "/github.io/Diligence/static/media/team-2.13ae2ce3e12f4cfed420.jpg",
+    "static/media/team-3.jpg": "/github.io/Diligence/static/media/team-3.0ef0be95e6850814c79e.jpg",
+    "static/media/illustration-reset.jpg": "/github.io/Diligence/static/media/illustration-reset.edb5b7a600a39a93a543.jpg",
+    "static/media/team-4.jpg": "/github.io/Diligence/static/media/team-4.85c82b6e60178804017f.jpg",
+    "static/media/logo-digitalocean.svg": "/github.io/Diligence/static/media/logo-digitalocean.a1f147b01387952368e3180edf221c96.svg",
+    "static/media/logo-vodafone.svg": "/github.io/Diligence/static/media/logo-vodafone.b3e8486c0cac220bc3a31c9eab049b21.svg",
+    "static/media/logo-facebook.svg": "/github.io/Diligence/static/media/logo-facebook.106d2ac0ece089e3c6def0a36c283ef7.svg",
+    "static/media/logo-apple.svg": "/github.io/Diligence/static/media/logo-apple.f9c2682e61da98dfbc703a4dccd0d064.svg",
+    "static/media/logo-nasa.svg": "/github.io/Diligence/static/media/logo-nasa.c5d11f8820bfde5fd64db0074156e06c.svg",
+    "index.html": "/github.io/Diligence/index.html",
+    "main.eab34d49.js.map": "/github.io/Diligence/static/js/main.eab34d49.js.map",
+    "239.d9726c66.chunk.js.map": "/github.io/Diligence/static/js/239.d9726c66.chunk.js.map",
+    "213.c38bdbd8.chunk.js.map": "/github.io/Diligence/static/js/213.c38bdbd8.chunk.js.map",
+    "455.2aad139e.chunk.js.map": "/github.io/Diligence/static/js/455.2aad139e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.eab34d49.js"
+  ]
+}
