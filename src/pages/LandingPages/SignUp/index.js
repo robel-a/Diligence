@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { IconButton } from "@mui/material";
+import { IconButton, Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import { BASEURL } from "../../../Api";
@@ -24,6 +24,11 @@ function SignUpBasic() {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Snackbar state
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -61,40 +66,40 @@ function SignUpBasic() {
 
     try {
       const response = await axios.post(
-        `${BASEURL}/register`, // Corrected URL
+        `${BASEURL}/register`,
         {
           name,
           email,
           password,
-
         }
       );
 
-      // Handle successful registration (e.g., redirect or show a success message)
-      console.log(response.data);
-      // Redirect or perform other actions on success
+      // On successful registration
+      setSnackbarMessage("Registration successful!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
+
+      // Clear the form fields
+      setName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (error) {
-      // Handle error (e.g., display error message)
-      console.error(error);
-      setPasswordError("Registration failed. Please try again.");
+      // On error during registration
+      setSnackbarMessage("Registration failed. Please try again.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
     <>
-      {/* <DefaultNavbar
-        routes={routes}
-      // action={{
-      //   type: "external",
-      //   route: "https://www.creative-tim.com/product/material-kit-react",
-      //   label: "free download",
-      //   color: "info",
-      // }}
-      // transparent
-      // light
-      /> */}
       <MKBox
         position="absolute"
         top={0}
@@ -102,16 +107,6 @@ function SignUpBasic() {
         zIndex={1}
         width="100%"
         minHeight="100vh"
-        // sx={{
-        //   backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
-        //     `${linearGradient(
-        //       rgba(gradients.dark.main, 0.6),
-        //       rgba(gradients.dark.state, 0.6)
-        //     )}, url(${bgImage})`,
-        //   backgroundSize: "cover",
-        //   backgroundPosition: "center",
-        //   backgroundRepeat: "no-repeat",
-        // }}
         bgColor="#7F9DC0"
       />
       <MKBox px={1} width="100%" height="100vh" mx="auto" position="relative" zIndex={2}>
@@ -157,7 +152,6 @@ function SignUpBasic() {
                     <MKInput
                       type={showPassword ? "text" : "password"}
                       label="Password"
-                      variant="standard"
                       fullWidth
                       value={password}
                       onChange={(e) => {
@@ -182,7 +176,6 @@ function SignUpBasic() {
                     <MKInput
                       type={showPassword ? "text" : "password"}
                       label="Confirm Password"
-                      variant="standard"
                       fullWidth
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -219,9 +212,18 @@ function SignUpBasic() {
           </Grid>
         </Grid>
       </MKBox>
-      {/* <MKBox width="100%" position="absolute" zIndex={2} bottom="1.625rem">
-        <SimpleFooter light />
-      </MKBox> */}
+
+      {/* Snackbar for confirmation messages */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

@@ -13,13 +13,23 @@ import {
     InputLabel,
     Alert,
     TablePagination,
+    IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Typography,
+    Button
 } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import MKBox from "components/MKBox";
 import MKTypography from "../../components/MKTypography";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import axios from "axios";
 import { BASEURL } from "Api";
 import routes from "routes";
+import { useNavigate } from "react-router-dom";
 
 function ReportTable() {
     const [formList, setFormList] = useState([]);
@@ -27,6 +37,10 @@ function ReportTable() {
     const [error, setError] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteIndex, setDeleteIndex] = useState(null);
+    const [successMessage, setSuccessMessage] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchReports = async () => {
@@ -59,6 +73,7 @@ function ReportTable() {
                 { header: "Freight", key: "freight_value" },
                 { header: "Insurance", key: "insurance_value" },
                 { header: "CIF", key: "converted_price" },
+                { header: "Action", key: "action" },
             ];
         } else if (selectedType === "customTax") {
             return [
@@ -84,6 +99,7 @@ function ReportTable() {
                 { header: "Total Withholding", key: "total_withholding" },
                 { header: "Total Social Welfare", key: "total_social" },
                 { header: "TOTAL TAX", key: "total_tax" },
+                { header: "Action", key: "action" },
             ];
         }
         return [];
@@ -99,11 +115,54 @@ function ReportTable() {
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0); // Reset page to 0 when rows per page changes
+        setPage(0);
     };
 
-    // Calculate current page data
-    const currentPageData = formList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const handleEdit = (item) => {
+        const productDetails = item.product_details && item.product_details[0];
+        navigate("/pages/AddProduct", {
+            state: {
+                productDetails: {
+                    name: productDetails?.name || '',
+                    price: productDetails?.price || 0,
+                    quantity: productDetails?.quantity || 0,
+                    id: item.id
+                }
+            }
+        });
+    };
+
+    const handleDeleteProduct = (id) => {
+        setDeleteIndex(id);  // Set the product ID to delete
+        setConfirmOpen(true);  // Open confirmation dialog
+    };
+
+    const confirmDeleteProduct = async () => {
+        if (deleteIndex !== null) {  // If a product ID is set
+            try {
+                await axios.delete(`${BASEURL}/reports/${deleteIndex}?type=${selectedType}`);  // Delete the product
+
+                const newFormList = formList.filter((product) => product.id !== deleteIndex);  // Filter out deleted product
+                setFormList(newFormList);  // Update state
+
+                setConfirmOpen(false);  // Close dialog
+                setDeleteIndex(null);  // Reset delete index
+                setSuccessMessage("Product deleted successfully!");  // Success message
+            } catch (error) {
+                console.error("Error deleting product:", error);  // Log error
+                setError("Failed to delete product. Please try again.");  // Error message
+            }
+        } else {
+            setError("Invalid delete index or products array.");  // Error if deleteIndex is invalid
+        }
+    };
+
+    const cancelDeleteProduct = () => {
+        setConfirmOpen(false);  // Close dialog
+        setDeleteIndex(null);  // Reset delete index
+    };
+
+    const currentPageData = formList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);  // Pagination logic
 
     return (
         <>
@@ -164,20 +223,34 @@ function ReportTable() {
                                             {currentPageData.length > 0 ? (
                                                 currentPageData.map((item, index) => (
                                                     <TableRow key={index}>
-                                                        {getColumns().map((col, colIndex) => (
+                                                        <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                                                        {getColumns().slice(1, -1).map((col, colIndex) => (
                                                             <TableCell key={colIndex}>
                                                                 <MKTypography variant="body2">
                                                                     {col.key === 'name' || col.key === 'price' || col.key === 'quantity'
                                                                         ? item.product_details && item.product_details.length > 0
                                                                             ? item.product_details
                                                                                 .map((detail) => detail[col.key] || 'N/A')
-                                                                                .join(", ") // Concatenate product details in the same cell
+                                                                                .join(", ")
                                                                             : '-'
                                                                         : formatData(item, col.key)}
                                                                 </MKTypography>
                                                             </TableCell>
-
                                                         ))}
+                                                        <TableCell>
+                                                            <IconButton
+                                                                color="primary"
+                                                                onClick={() => handleEdit(item)}
+                                                            >
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                            <IconButton
+                                                                color="primary"
+                                                                onClick={() => handleDeleteProduct(item.id)}  // Pass the item ID here
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </TableCell>
                                                     </TableRow>
                                                 ))
                                             ) : (
@@ -188,8 +261,6 @@ function ReportTable() {
                                                 </TableRow>
                                             )}
                                         </TableBody>
-
-
                                     </Table>
                                 </TableContainer>
 
@@ -207,6 +278,20 @@ function ReportTable() {
                     </Grid>
                 </Grid>
             </MKBox>
+            <Dialog open={confirmOpen} onClose={cancelDeleteProduct}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <Typography>Are you sure you want to delete this product?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={cancelDeleteProduct} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={confirmDeleteProduct} color="secondary">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 }

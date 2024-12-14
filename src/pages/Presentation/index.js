@@ -43,7 +43,7 @@ import RotatingCard from "examples/Cards/RotatingCard";
 import RotatingCardFront from "examples/Cards/RotatingCard/RotatingCardFront";
 import RotatingCardBack from "examples/Cards/RotatingCard/RotatingCardBack";
 // Routes
-import routes from "navigationRoute";
+import navroutes from "navigationRoute";
 import footerRoutes from "footer.routes";
 
 // Images
@@ -57,7 +57,7 @@ function Presentation() {
   return (
     <>
       <DefaultNavbar
-        routes={routes}
+        routes={navroutes}
         sticky
       />
       <MKBox

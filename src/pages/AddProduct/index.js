@@ -14,18 +14,19 @@ function AddProduct() {
     const [price, setPrice] = useState(0);
     const [quantity, setQuantity] = useState(0);
     const [products, setProducts] = useState([]);
-    const [error, setError] = useState(""); // State to handle error messages
-    const [errorDetails, setErrorDetails] = useState(""); // State to handle detailed error messages
-    const [confirmOpen, setConfirmOpen] = useState(false); // State for confirmation dialog
-    const [deleteIndex, setDeleteIndex] = useState(null); // Index of product to delete
-    const [successMessage, setSuccessMessage] = useState(""); // State for success messages
+    const [error, setError] = useState("");
+    const [errorDetails, setErrorDetails] = useState("");
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteIndex, setDeleteIndex] = useState(null);
+    const [successMessage, setSuccessMessage] = useState("");
     const navigate = useNavigate();
 
     const totalPrice = price * quantity;
 
     const handleAddProduct = () => {
         if (name && price > 0 && quantity > 0) {
-            setProducts([...products, { name, price, quantity, total_price: totalPrice }]);
+            const newProduct = { name, price, quantity, total_price: totalPrice };
+            setProducts([...products, newProduct]);
             setName("");
             setPrice(0);
             setQuantity(0);
@@ -37,18 +38,27 @@ function AddProduct() {
 
     const handleSendTotalPrice = async () => {
         try {
-            // Send product data to backend
+            // Send product data to the backend
             await axios.post(`${BASEURL}/products`, { products });
 
             // Show success message
             setSuccessMessage("Product data sent successfully!");
 
-            // Navigate to another page with state
-            navigate("/pages/CustomTax/BlackRate", { state: { products } });
+            // Navigate to another page with state, including both products and productDetails
+            navigate("/pages/CustomTax/BlackRate", {
+                state: {
+                    products,
+                    productDetails: products.map(product => ({
+                        name: product.name,
+                        price: product.price,
+                        quantity: product.quantity,
+                    })), // Passing as productDetails
+                },
+            });
+
+            console.log(products);
         } catch (error) {
-            // Handle error and update the error state
             if (error.response && error.response.status === 422) {
-                // Extract and display validation error messages from server
                 setErrorDetails(error.response.data.errors);
             } else {
                 setError("Failed to send product data. Please try again.");
@@ -73,7 +83,6 @@ function AddProduct() {
         setConfirmOpen(false);
         setDeleteIndex(null);
     };
-
     return (
         <>
             <DefaultNavbar routes={routes} sticky />

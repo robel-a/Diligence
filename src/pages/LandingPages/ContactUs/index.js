@@ -27,7 +27,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import DefaultFooter from "examples/Footers/DefaultFooter";
 
 // Routes
-import routes from "navigationRoute";
+import navroutes from "navigationRoute";
 import footerRoutes from "footer.routes";
 
 // Image
@@ -38,7 +38,7 @@ function ContactUs() {
     <>
       <MKBox position="fixed" top="0.5rem" width="100%">
         <DefaultNavbar
-          routes={routes}
+          routes={navroutes}
         // action={{
         //   type: "external",
         //   route: "https://www.creative-tim.com/product/material-kit-react",
